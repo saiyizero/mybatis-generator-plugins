@@ -93,7 +93,7 @@ public class myBeanUtils {
     }
 
     public static List getList(){
-        return new ArrayList<>();
+        return new ArrayList();
     }
 
 

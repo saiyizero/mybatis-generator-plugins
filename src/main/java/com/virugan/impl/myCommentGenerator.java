@@ -1,5 +1,6 @@
 package com.virugan.impl;
 
+import com.virugan.utils.myLogger;
 import org.mybatis.generator.api.IntrospectedColumn;
 import org.mybatis.generator.api.IntrospectedTable;
 import org.mybatis.generator.api.dom.java.Field;
@@ -59,9 +60,7 @@ public class myCommentGenerator extends DefaultCommentGenerator {
     }
 
     public void addClassComment(InnerClass innerClass, IntrospectedTable introspectedTable, boolean markAsDoNotDelete) {
-        if (suppressAllComments) {
-            return;
-        }
+        myLogger.debug("<<<<<<<<<<<<<<<<<<<<<<<<<<<<addClassComment1<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
         StringBuilder sb = new StringBuilder();
         sb.append("/** ");
         sb.append("\n  * ");
@@ -73,6 +72,7 @@ public class myCommentGenerator extends DefaultCommentGenerator {
     }
 
     public void addClassComment(InnerClass innerClass, IntrospectedTable introspectedTable) {
+        myLogger.debug("<<<<<<<<<<<<<<<<<<<<<<<<<<<<addClassComment2<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
         if (suppressAllComments) {
             return;
         }

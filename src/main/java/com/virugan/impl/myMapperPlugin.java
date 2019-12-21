@@ -37,42 +37,20 @@ public class myMapperPlugin extends PluginAdapter{
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public boolean modelBaseRecordClassGenerated(TopLevelClass topLevelClass,IntrospectedTable introspectedTable) {
-        myLogger.debug("modelBaseRecordClassGenerated —— topLevelClass");
         this.getPrimaryKeyGenerated(introspectedTable, topLevelClass);
+        topLevelClass.setSuperClass("myComponent");
+        topLevelClass.addImportedType("com.virugan.interfac.myComponent");
+        topLevelClass.addImportedType("java.util.LinkedHashMap");
 
-//        myLogger.debugToObject("introspectedTable",introspectedTable);
-
-//		if (introspectedTable.getPrimaryKeyColumns().size() > 1) {
-//			List oldFields = new ArrayList(topLevelClass.getFields());
-//			topLevelClass.getFields().clear();
-//			Field f;
-//			for (Iterator iterator = oldFields.iterator(); iterator.hasNext(); topLevelClass.addField(f))
-//				f = (Field) iterator.next();
-//
-//		}
-		return true;
+        return true;
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public boolean modelPrimaryKeyClassGenerated(TopLevelClass topLevelClass,IntrospectedTable introspectedTable) {
-//        this.getPrimaryKeyGenerated(introspectedTable, topLevelClass);
 		return false;
 	}
 
 	public boolean modelFieldGenerated(Field field,TopLevelClass topLevelClass, IntrospectedColumn introspectedColumn,IntrospectedTable introspectedTable,org.mybatis.generator.api.Plugin.ModelClassType modelClassType) {
-        myLogger.debug("modelFieldGenerated —— topLevelClass");
-        int size = introspectedTable.getPrimaryKeyColumns().size();
-		if (introspectedTable.getPrimaryKeyColumns().contains(introspectedColumn)) {
-			if (size > 1) {
-				StringBuilder sb = new StringBuilder();
-				sb.append(introspectedTable.getFullyQualifiedTable().getDomainObjectName());
-				for (int i = 0; i < field.getName().getBytes().length; i++)
-					if (i == 0)
-						sb.append(Character.toUpperCase((char) field.getName().getBytes()[i]));
-					else
-						sb.append((char) field.getName().getBytes()[i]);
-			}
-		}
 		return true;
 	}
 	
@@ -103,28 +81,60 @@ public class myMapperPlugin extends PluginAdapter{
 	}
 
     private void getPrimaryKeyGenerated(IntrospectedTable introspectedTable, TopLevelClass topLevelClass) {
-        if(introspectedTable.getPrimaryKeyColumns().size()<=0){
+        myLogger.debug(">>>>>>>>>>>>>>>>>>>>>>>>>>>>getPrimaryKeyGenerated>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+	    if(introspectedTable.getPrimaryKeyColumns().size()<=0){
             return;
         }
         Method method = new Method();
         method.setVisibility(JavaVisibility.PUBLIC);
-        method.setReturnType(new FullyQualifiedJavaType("List<String>"));
+        method.setReturnType(new FullyQualifiedJavaType("LinkedHashMap"));
         method.setName("getPrimaryKey");
-        StringBuilder sb = new StringBuilder();
-        sb.append("return Arrays.asList(");
+
+        method.addBodyLine("if(primkeyMap==null){");
+        method.addBodyLine("   primkeyMap=new LinkedHashMap<String,Object>();");
+        method.addBodyLine("}");
+
+
         this.context.getCommentGenerator().addGeneralMethodComment(method, introspectedTable);
 
         List<IntrospectedColumn> primaryKeyColumns = introspectedTable.getPrimaryKeyColumns();
         for(IntrospectedColumn column:primaryKeyColumns){
-            sb.append("\"");
+            StringBuilder sb = new StringBuilder();
+            sb.append("primkeyMap.put(\"");
             sb.append(column.getActualColumnName());
-            sb.append("\",");
-        }
-        String methodBody = sb.toString();
-        methodBody=methodBody.substring(0,methodBody.lastIndexOf(","))+");";
+            sb.append("\",this.");
+            sb.append(column.getActualColumnName());
+            sb.append(");");
+            method.addBodyLine(sb.toString());
 
-        method.addBodyLine(methodBody);
+            Field field = new Field();
+            field.setName(column.getActualColumnName());
+            field.setVisibility(JavaVisibility.PRIVATE);
+            field.setType(column.getFullyQualifiedJavaType());
+            field.addJavaDocLine("/** "+column.getRemarks()+" **/");
+            topLevelClass.addField(field);
+
+            //添加get方法
+            Method getmethod = new Method();
+            getmethod.setVisibility(JavaVisibility.PUBLIC);
+            getmethod.setReturnType(column.getFullyQualifiedJavaType());
+            getmethod.setName("get"+column.getActualColumnName().substring(0, 1).toUpperCase() + column.getActualColumnName().substring(1));
+            getmethod.addBodyLine("return "+column.getActualColumnName()+";");
+            topLevelClass.addMethod(getmethod);
+
+            //添加set方法
+            Method setmethod = new Method();
+            setmethod.setVisibility(JavaVisibility.PUBLIC);
+            setmethod.addParameter(new Parameter(column.getFullyQualifiedJavaType(), column.getActualColumnName()));
+            setmethod.setName("set"+column.getActualColumnName().substring(0, 1).toUpperCase() + column.getActualColumnName().substring(1));
+            setmethod.addBodyLine("this."+column.getActualColumnName()+" = "+column.getActualColumnName()+
+            " == null ? null : "+column.getActualColumnName()+".trim();");
+            topLevelClass.addMethod(setmethod);
+        }
+        method.addBodyLine("return primkeyMap;");
+
         topLevelClass.addMethod(method);
+        myLogger.debug("<<<<<<<<<<<<<<<<<<<<<<<<<<<<getPrimaryKeyGenerated<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
     }
 	
     public boolean sqlMapExampleWhereClauseElementGenerated(XmlElement element, IntrospectedTable introspectedTable)
