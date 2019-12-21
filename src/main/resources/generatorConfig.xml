@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration
+        PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+
+<generatorConfiguration>
+
+    <properties resource="mybatisGenerator.properties" />
+
+    <classPathEntry location="${database.jdbcpath}" />
+    <context id="mysqlctx" targetRuntime="com.virugan.impl.myIntrospectedTableImpl">
+
+        <property name="mapperTargetPackage" value="${mybatis.interface.package}.ac" />
+
+        <plugin type="com.virugan.impl.myMapperPlugin" />
+
+        <commentGenerator type="com.virugan.impl.myCommentGenerator"/>
+
+
+        <jdbcConnection driverClass="${database.driverClass}"  connectionURL="${database.url}" userId="${database.userId}"  password="${database.password}" />
+
+        <javaTypeResolver>
+            <property name="forceBigDecimals" value="true" />
+        </javaTypeResolver>
+
+        <javaModelGenerator targetPackage="${mybatis.tables.package}.ac"  targetProject="${mybatis.tables.project}">
+            <property name="enableSubPackages" value="true" />
+            <property name="trimStrings" value="true" />
+        </javaModelGenerator>
+
+        <sqlMapGenerator targetPackage="${mybatis.xml.package}.ac"  targetProject="${mybatis.xml.project}">
+            <property name="enableSubPackages" value="false" />
+        </sqlMapGenerator>
+
+        <javaClientGenerator type="XMLMAPPER"  targetPackage="${mybatis.interface.package}.ac" targetProject="${mybatis.interface.project}">
+            <property name="enableSubPackages" value="false" />
+        </javaClientGenerator>
+
+        <table schema="" tableName="hxsys_ac_kjkemu" domainObjectName="hxsysAcKjkemu"></table>
+    </context>
+</generatorConfiguration>
