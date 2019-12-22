@@ -1,11 +1,12 @@
 package com.virugan.impl;
 
+import com.virugan.utils.myBeanUtils;
 import com.virugan.utils.myLogger;
 import org.mybatis.generator.api.IntrospectedColumn;
 import org.mybatis.generator.api.IntrospectedTable;
-import org.mybatis.generator.api.dom.java.Field;
-import org.mybatis.generator.api.dom.java.InnerClass;
-import org.mybatis.generator.api.dom.java.Method;
+import org.mybatis.generator.api.dom.java.*;
+import org.mybatis.generator.api.dom.xml.TextElement;
+import org.mybatis.generator.api.dom.xml.XmlElement;
 import org.mybatis.generator.internal.DefaultCommentGenerator;
 
 import java.text.SimpleDateFormat;
@@ -29,6 +30,13 @@ public class myCommentGenerator extends DefaultCommentGenerator {
         currentDateStr = (new SimpleDateFormat("yyyy-MM-dd")).format(new Date());
     }
 
+    public void addComment(XmlElement xmlElement) {
+        //重写该方法去除xml中注释
+    }
+
+    protected void addJavadocTag(JavaElement javaElement, boolean markAsDoNotDelete) {
+        //重写该方法去除xml中注释
+    }
 
     public void addFieldComment(Field field, IntrospectedTable introspectedTable, IntrospectedColumn introspectedColumn) {
         if (suppressAllComments) {
@@ -59,29 +67,9 @@ public class myCommentGenerator extends DefaultCommentGenerator {
 
     }
 
-    public void addClassComment(InnerClass innerClass, IntrospectedTable introspectedTable, boolean markAsDoNotDelete) {
-        myLogger.debug("<<<<<<<<<<<<<<<<<<<<<<<<<<<<addClassComment1<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
-        StringBuilder sb = new StringBuilder();
-        sb.append("/** ");
-        sb.append("\n  * ");
-        sb.append(introspectedTable.getFullyQualifiedTable());
-        sb.append("\n");
-        sb.append(" **/");
-        innerClass.addJavaDocLine(sb.toString());
+    public void addModelClassComment(TopLevelClass topLevelClass, IntrospectedTable introspectedTable) {
 
     }
 
-    public void addClassComment(InnerClass innerClass, IntrospectedTable introspectedTable) {
-        myLogger.debug("<<<<<<<<<<<<<<<<<<<<<<<<<<<<addClassComment2<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
-        if (suppressAllComments) {
-            return;
-        }
-        StringBuilder sb = new StringBuilder();
-        sb.append("/** ");
-        sb.append("\n  * ");
-        sb.append(introspectedTable.getFullyQualifiedTable());
-        sb.append("\n");
-        sb.append(" **/");
-        innerClass.addJavaDocLine(sb.toString());
-    }
+
 }

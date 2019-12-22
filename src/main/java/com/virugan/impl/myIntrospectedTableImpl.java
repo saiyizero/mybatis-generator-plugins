@@ -29,27 +29,7 @@ public class myIntrospectedTableImpl  extends IntrospectedTableMyBatis3Impl{
         setMyBatis3FallbackSqlMapNamespace(calculateMyBatis3FallbackSqlMapNamespace());
         setSqlMapFullyQualifiedRuntimeTableName(calculateSqlMapFullyQualifiedRuntimeTableName());
         setSqlMapAliasedFullyQualifiedRuntimeTableName(calculateSqlMapAliasedFullyQualifiedRuntimeTableName());
-        setCountByExampleStatementId("countByExample");
-        setDeleteByExampleStatementId("deleteByExample");
-        setDeleteByPrimaryKeyStatementId("deleteByPrimaryKey");
-        setInsertStatementId("insertOld");
-        setInsertSelectiveStatementId("insert");
-        setSelectAllStatementId("selectAll");
-        setSelectByExampleStatementId("selectByExample");
-        setSelectByExampleWithBLOBsStatementId("selectByExampleWithBLOBs");
-        setSelectByPrimaryKeyStatementId("selectByPrimaryKey");
-        setUpdateByExampleStatementId("updateByExample");
-        setUpdateByExampleSelectiveStatementId("updateByExampleSelective");
-        setUpdateByExampleWithBLOBsStatementId("updateByExampleWithBLOBs");
-        setUpdateByPrimaryKeyStatementId("updateByPrimaryKey");
-        setUpdateByPrimaryKeySelectiveStatementId("updateByPrimaryKeySelective");
-        setUpdateByPrimaryKeyWithBLOBsStatementId("updateByPrimaryKeyWithBLOBs");
-        setBaseResultMapId("BaseResultMap");
-        setResultMapWithBLOBsId("ResultMapWithBLOBs");
-        setExampleWhereClauseId("Example_Where_Clause");
-        setBaseColumnListId("Base_Column_List");
-        setBlobColumnListId("Blob_Column_List");
-        setMyBatis3UpdateByExampleWhereClauseId("Update_By_Example_Where_Clause");
+
         customerCalculateXmlAttributes();
     }
 
@@ -61,14 +41,20 @@ public class myIntrospectedTableImpl  extends IntrospectedTableMyBatis3Impl{
     }
 
     private void customerCalculateXmlAttributes(){
+
+        //设置生成xml对应id名称
         setBaseResultMapId("basicResultMap");
         setResultMapWithBLOBsId("resultMapWithBLOBs");
         setBlobColumnListId("blobColumnList");
         setBaseColumnListId("baseColumnList");
-        setSelectByExampleStatementId("myFind");
-        setSelectAllStatementId("myFindPage");
-        setUpdateByPrimaryKeySelectiveStatementId("update");
+        setSelectByExampleStatementId("mySelect");
+        setCountByExampleStatementId("myCount");
+        setInsertSelectiveStatementId("myInsert");
+        setUpdateByPrimaryKeySelectiveStatementId("myUpdateOne");
         setDeleteByExampleStatementId("myDelete");
+        setSelectAllStatementId("mySelectPage");
+        setUpdateByExampleSelectiveStatementId("myUpdateByExmp");
+        setSelectByExampleWithBLOBsStatementId("mySelectOne");
     }
 
     public String getAliasedFullyQualifiedTableNameAtRuntime(){

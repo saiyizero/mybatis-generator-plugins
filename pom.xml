@@ -11,7 +11,7 @@
     </properties>
 
     <groupId>com.virugan</groupId>
-    <artifactId>mybatis-generator-plug</artifactId>
+    <artifactId>mybatis-generator-plugins</artifactId>
     <version>1.0-SNAPSHOT</version>
     <dependencies>
         <dependency>
