@@ -37,6 +37,7 @@ public class myMapperPlugin extends PluginAdapter{
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public boolean modelBaseRecordClassGenerated(TopLevelClass topLevelClass,IntrospectedTable introspectedTable) {
         this.getPrimaryKeyGenerated(introspectedTable, topLevelClass);
+        this.getTableNameGenerated(introspectedTable, topLevelClass);
         topLevelClass.setSuperClass("myComponent");
         topLevelClass.addImportedType("com.virugan.interfac.myComponent");
         topLevelClass.addImportedType("java.util.LinkedHashMap");
@@ -67,6 +68,15 @@ public class myMapperPlugin extends PluginAdapter{
 	    }
 	    return generatedFile;
 	}
+
+	private void getTableNameGenerated(IntrospectedTable introspectedTable, TopLevelClass topLevelClass) {
+        Method method = new Method();
+        method.setVisibility(JavaVisibility.PUBLIC);
+        method.setReturnType(new FullyQualifiedJavaType("String"));
+        method.setName("getTableName");
+        method.addBodyLine("return \""+introspectedTable.getFullyQualifiedTable()+"\";");
+        topLevelClass.addMethod(method);
+    }
 
     private void getPrimaryKeyGenerated(IntrospectedTable introspectedTable, TopLevelClass topLevelClass) {
 	    if(introspectedTable.getPrimaryKeyColumns().size()<=0){
@@ -114,8 +124,12 @@ public class myMapperPlugin extends PluginAdapter{
             setmethod.setVisibility(JavaVisibility.PUBLIC);
             setmethod.addParameter(new Parameter(column.getFullyQualifiedJavaType(), column.getActualColumnName()));
             setmethod.setName("set"+column.getActualColumnName().substring(0, 1).toUpperCase() + column.getActualColumnName().substring(1));
-            setmethod.addBodyLine("this."+column.getActualColumnName()+" = "+column.getActualColumnName()+
-            " == null ? null : "+column.getActualColumnName()+".trim();");
+            if(column.getFullyQualifiedJavaType().getFullyQualifiedName().equals("java.lang.String")){
+                setmethod.addBodyLine("this."+column.getActualColumnName()+" = "+column.getActualColumnName()+
+                        " == null ? null : "+column.getActualColumnName()+".trim();");
+            }else{
+                setmethod.addBodyLine("this."+column.getActualColumnName()+" = "+column.getActualColumnName()+";");
+            }
             topLevelClass.addMethod(setmethod);
         }
         method.addBodyLine("return primkeyMap;");
