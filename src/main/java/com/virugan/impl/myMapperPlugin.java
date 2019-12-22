@@ -80,6 +80,12 @@ public class myMapperPlugin extends PluginAdapter{
 
     private void getPrimaryKeyGenerated(IntrospectedTable introspectedTable, TopLevelClass topLevelClass) {
 	    if(introspectedTable.getPrimaryKeyColumns().size()<=0){
+            Method method = new Method();
+            method.setVisibility(JavaVisibility.PUBLIC);
+            method.setReturnType(new FullyQualifiedJavaType("LinkedHashMap"));
+            method.setName("getPrimaryKey");
+            method.addBodyLine("return primkeyMap;");
+            topLevelClass.addMethod(method);
             return;
         }
         Method method = new Method();
@@ -104,33 +110,47 @@ public class myMapperPlugin extends PluginAdapter{
             sb.append(");");
             method.addBodyLine(sb.toString());
 
+
+
             Field field = new Field();
             field.setName(column.getActualColumnName());
             field.setVisibility(JavaVisibility.PRIVATE);
             field.setType(column.getFullyQualifiedJavaType());
             field.addJavaDocLine("/** "+column.getRemarks()+" **/");
-            topLevelClass.addField(field);
 
-            //添加get方法
-            Method getmethod = new Method();
-            getmethod.setVisibility(JavaVisibility.PUBLIC);
-            getmethod.setReturnType(column.getFullyQualifiedJavaType());
-            getmethod.setName("get"+column.getActualColumnName().substring(0, 1).toUpperCase() + column.getActualColumnName().substring(1));
-            getmethod.addBodyLine("return "+column.getActualColumnName()+";");
-            topLevelClass.addMethod(getmethod);
-
-            //添加set方法
-            Method setmethod = new Method();
-            setmethod.setVisibility(JavaVisibility.PUBLIC);
-            setmethod.addParameter(new Parameter(column.getFullyQualifiedJavaType(), column.getActualColumnName()));
-            setmethod.setName("set"+column.getActualColumnName().substring(0, 1).toUpperCase() + column.getActualColumnName().substring(1));
-            if(column.getFullyQualifiedJavaType().getFullyQualifiedName().equals("java.lang.String")){
-                setmethod.addBodyLine("this."+column.getActualColumnName()+" = "+column.getActualColumnName()+
-                        " == null ? null : "+column.getActualColumnName()+".trim();");
-            }else{
-                setmethod.addBodyLine("this."+column.getActualColumnName()+" = "+column.getActualColumnName()+";");
+            boolean isContains=true;
+            List<Field> fields = topLevelClass.getFields();
+            for(Field thisfield:fields){
+                if(thisfield.getName().equals(field.getName())){
+                    isContains=false;
+                }
             }
-            topLevelClass.addMethod(setmethod);
+
+            //如果不存在主键变量才添加
+            if(isContains){
+                topLevelClass.addField(field);
+                //添加get方法
+                Method getmethod = new Method();
+                getmethod.setVisibility(JavaVisibility.PUBLIC);
+                getmethod.setReturnType(column.getFullyQualifiedJavaType());
+                getmethod.setName("get"+column.getActualColumnName().substring(0, 1).toUpperCase() + column.getActualColumnName().substring(1));
+                getmethod.addBodyLine("return "+column.getActualColumnName()+";");
+                topLevelClass.addMethod(getmethod);
+
+                //添加set方法
+                Method setmethod = new Method();
+                setmethod.setVisibility(JavaVisibility.PUBLIC);
+                setmethod.addParameter(new Parameter(column.getFullyQualifiedJavaType(), column.getActualColumnName()));
+                setmethod.setName("set"+column.getActualColumnName().substring(0, 1).toUpperCase() + column.getActualColumnName().substring(1));
+                if(column.getFullyQualifiedJavaType().getFullyQualifiedName().equals("java.lang.String")){
+                    setmethod.addBodyLine("this."+column.getActualColumnName()+" = "+column.getActualColumnName()+
+                            " == null ? null : "+column.getActualColumnName()+".trim();");
+                }else{
+                    setmethod.addBodyLine("this."+column.getActualColumnName()+" = "+column.getActualColumnName()+";");
+                }
+                topLevelClass.addMethod(setmethod);
+            }
+
         }
         method.addBodyLine("return primkeyMap;");
 
